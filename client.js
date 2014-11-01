@@ -71,7 +71,7 @@
                 }
             };
 
-        // cycle through uaChecks and see if they're container in the useragent string
+        // cycle through uaChecks and see if they're contained in the userAgent string
         for (var s in uaChecks){ 
             returnVals[s] = uaCheck(uaChecks[s]);
         }
