@@ -7,6 +7,7 @@
     function clientCheck(){
         var navAgent = navigator.userAgent.toLowerCase(),
             div = document.createElement('div'),
+            img = new Image(),
             html = document.documentElement,
             classStr = '',
             uaChecks = { // user agent values to check against
@@ -36,9 +37,12 @@
                 willChange: ['willChange'],
                 calc: ['calc', '-webkit-calc', '-moz-calc', '-o-calc']
             },
-            returnVals = {
+            returnVals = { // additional checks that don't neatly fit into css or user agent function checks
                 safari: navAgent.indexOf('chrome') > -1 ? false : navAgent.indexOf('safari') > -1,
                 retina: window.devicePixelRatio >= 1.5,
+                pictureElem: window.HTMLPictureElement || false,
+                srcsetBasic: 'srcset' in img, // basic 1x / 2x descriptor use of srcset
+                srcsetFull: 'sizes' in img, // full srcset use, including media queries
                 requestAnimFrame: window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame,
                 cancelAnimFrame: window.cancelAnimationFrame || window.webkitCancelRequestAnimationFrame || window.mozCancelRequestAnimationFrame
             },
@@ -86,7 +90,7 @@
         html.className += classStr;
 
         // functions to expose in the client object
-        if (!returnVals.requestAnimFrame){ // polyfill for requestAnimationFrame - adapted from original by Erik Moller
+        if ( (!returnVals.requestAnimFrame) || (!returnVals.cancelAnimFrame)  ){ // polyfill for requestAnimationFrame - adapted from original by Erik Moller
             var lastTime = 0;
             returnVals.requestAnimFrame = function(callback, element){
                 var currTime = new Date().getTime(),
