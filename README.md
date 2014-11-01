@@ -11,6 +11,7 @@ These checks are made available via a "client" object in the window, and any sup
 Each of these is listed with the property name in the client object, e.g. `client.IE7`
 
 #### Browser / Device detection:
+These simply return true or false. If true, the property will be added as a lowercase class to the HTML tag.
 - IE7
 - IE8
 - IE9
@@ -32,7 +33,7 @@ Each of these is listed with the property name in the client object, e.g. `clien
 - mac
 
 #### CSS property detection:
-If supported, these return the supported property e.g. 'WebkitPerspective'
+If supported, these return the supported CSS property (and add it as a class to the HTML tag) e.g. 'WebkitPerspective'
 - perspective (can be used to check translateZ or translate3d support)
 - transition
 - transform
