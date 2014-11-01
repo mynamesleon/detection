@@ -45,8 +45,8 @@ If supported, these return the supported CSS property (and add it as a class to 
 - pictureElem (support of the `<picture>` element)
 - srcsetBasic (basic use of the img 'srcset' attribute with x descriptors for high pixel density displays)
 - srcsetFull (full support of the img 'srcset' attribute with the use of media queries)
-- requestAnimFrame (the browsers native requestAnimationFrame function, or a polyfill if unsupported)
-- cancelAnimFrame (the browsers native cancelAnimationFrame function, or a polyfill if unsupported)
+- requestAnimFrame (the browser's native requestAnimationFrame function, or a polyfill if unsupported)
+- cancelAnimFrame (the browser's native cancelAnimationFrame function, or a polyfill if unsupported)
 
 ## Creating your own checks
 
@@ -54,4 +54,4 @@ The script exposes two additional functions via the client object: `client.uaChe
 
 `client.uaCheck` takes a string which it checks against the browser's userAgent string. You can also include basic regex here. E.g. `client.uaCheck('chrome|firefox')` will return true in both Chrome and Firefox. This function simply checks for the existence of the string, so `client.uaCheck('chro')` will also return true in Chrome.
 
-`client.cssCheck` takes either a string of space delimited properties to check for, or an array of properties. E.g. `client.cssCheck('borderRadius WebkitBorderRadius')` or `client.cssCheck(['borderRadius', 'WebkitBorderRadius'])`. This checks whether or not the properties are supported on a `<div>`, and will return the first supported value in the sequence, or false if none are supported. E.g. `client.cssCheck('OBorderRadius MozBorderRadius WebkitBorderRadius borderRadius')` would return 'WebkitBorderRadius' in current Chrome.
+`client.cssCheck` takes either a string of space delimited properties to check for, or an array of properties. E.g. `client.cssCheck('borderRadius WebkitBorderRadius')` or `client.cssCheck(['borderRadius', 'WebkitBorderRadius'])`. This checks whether or not the properties are supported on a `<div>`, and will return the **first supported value** in the sequence, or false if none are supported. E.g. `client.cssCheck('OBorderRadius MozBorderRadius WebkitBorderRadius borderRadius')` would return 'WebkitBorderRadius' in current Chrome.
