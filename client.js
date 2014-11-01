@@ -98,11 +98,11 @@
             returnVals.cancelAnimFrame = function(id){ clearTimeout(id); };
         }
 
-        // requires an array, a space separated string, of css values to check against: e.g. ['boxSizing', 'WebkitBoxSizing'] or 'boxSizing WebkitBoxSizing'
+        // requires an array or space separated string of css values to check against: e.g. ['boxSizing', 'WebkitBoxSizing'] or 'boxSizing WebkitBoxSizing'
         // will return the first supported value in the sequence 
         returnVals.cssCheck = function(valueArray){ return cssCheck(valueArray); };
 
-        // takes a string (which will be converted into a regular expression) to check against e.g. 'firefox|chrome' - will return true in both firefox and chrome
+        // takes a string (which will be converted into a regular expression) to check against the userAgent e.g. 'firefox|chrome' will return true in both firefox and chrome
         returnVals.uaCheck = function(userAgentValue){ return uaCheck(userAgentValue); };
 
         return returnVals;
