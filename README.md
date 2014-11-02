@@ -11,7 +11,7 @@ These checks are made available via a "client" object in the window, and any sup
 Each of these is listed with the property name in the client object, e.g. `client.IE7`
 
 #### Browser / Device detection:
-These simply return true or false. If true, the property will be added as a lowercase class to the HTML tag.
+These properties are booleans. If true, the property will be added as a lowercase class to the HTML tag.
 - IE7
 - IE8
 - IE9
@@ -33,7 +33,7 @@ These simply return true or false. If true, the property will be added as a lowe
 - mac
 
 #### CSS property detection:
-If supported, these return the supported CSS property (and add it as a class to the HTML tag) e.g. 'WebkitPerspective'
+These return the supported CSS property (and add it as a class to the HTML tag, e.g. 'WebkitPerspective'). If unsupported, the property will return false.
 - perspective (can be used to check translateZ or translate3d support)
 - transition
 - transform
@@ -41,12 +41,12 @@ If supported, these return the supported CSS property (and add it as a class to 
 - calc (not technically a CSS property in itself, but still useful to check for)
 
 #### Additional features
-- retina (checks for a devicePixelRatio >= 1.5)
-- pictureElem (support of the `<picture>` element)
-- srcsetBasic (basic use of the img 'srcset' attribute with x descriptors for high pixel density displays)
-- srcsetFull (full support of the img 'srcset' attribute with the use of media queries)
-- requestAnimFrame (the browser's native requestAnimationFrame function, or a polyfill if unsupported)
-- cancelAnimFrame (the browser's native cancelAnimationFrame function, or a polyfill if unsupported)
+- retina (boolean - true if devicePixelRatio >= 1.5)
+- pictureElem (boolean - checks for `<picture>` element support)
+- srcsetBasic (boolean - checks for basic use of the img 'srcset' attribute with x descriptors for high pixel density displays)
+- srcsetFull (boolean - checks for full support of the img 'srcset' attribute with the use of media queries)
+- requestAnimFrame (function - uses the browser's native requestAnimationFrame function, or a polyfill if unsupported)
+- cancelAnimFrame (functions - uses the browser's native cancelAnimationFrame function, or a polyfill if unsupported)
 
 ## Creating your own checks
 
