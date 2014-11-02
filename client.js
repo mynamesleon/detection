@@ -40,7 +40,7 @@
             returnVals = { // additional checks that don't neatly fit into css or user agent function checks
                 safari: navAgent.indexOf('chrome') > -1 ? false : navAgent.indexOf('safari') > -1,
                 retina: window.devicePixelRatio >= 1.5,
-                pictureElem: window.HTMLPictureElement || false,
+                pictureElem: window.HTMLPictureElement !== undefined,
                 srcsetBasic: 'srcset' in img, // basic 1x / 2x descriptor use of srcset
                 srcsetFull: 'sizes' in img, // full srcset use, including media queries
                 requestAnimFrame: window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame,
