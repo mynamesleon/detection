@@ -49,6 +49,9 @@ These return the supported CSS property (and add it as a lowercase class to the 
 - requestAnimFrame (function - uses the browser's native requestAnimationFrame function, or a polyfill if unsupported. Will only be added as a class if the native browser function is supported.)
 - cancelAnimFrame (functions - uses the browser's native cancelAnimationFrame function, or a polyfill if unsupported. Will only be added as a class if the native browser function is supported.)
 
+##### Using requestAnimFrame
+The native request and cancel animation frame functions have to be executed in the context of the window to prevent an illegal invocation error. So instead of using `client.requestAnimFrame(functionCall)`, you'll need to use `client.requestAnimFrame.call(window, functionCall)`.
+
 ## Creating your own checks
 
 The script exposes two additional functions via the client object: `client.uaCheck(stringToCheck)` and `client.cssCheck(stringOrArray)`
