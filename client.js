@@ -24,7 +24,7 @@
                 iOS: 'iphone|ipad|ipod',
                 chrome: 'chrome',
                 firefox: 'firefox',
-                opera: 'opera',
+                opera: 'opera|opr/',
                 android: 'android',
                 mobile: 'android|webos|iphone|ipad|ipod|blackberry|windows phone|iemobile',
                 windowsPhone: 'windows phone',
@@ -35,6 +35,7 @@
                 transform: ['transform', 'WebkitTransform', 'MozTransform', 'OTransform', 'msTransform'],
                 transition: ['transition', 'WebkitTransition', 'MozTransition', 'OTransition', 'msTransition'],
                 willChange: ['willChange'],
+                animation: ['animation', 'WebkitAnimation', 'MozAnimation', 'OAnimation'],
                 calc: ['calc', '-webkit-calc', '-moz-calc', '-o-calc']
             },
             returnVals = { // additional checks that don't neatly fit into css or user agent function checks
@@ -84,7 +85,7 @@
         // cycle through css property checks
         for (var p in propChecks){
             returnVals[p] = cssCheck(propChecks[p], p);
-            addToClassStr(returnVals[p], returnVals[p]); // add supported value to class string rather than prop name
+            addToClassStr(returnVals[p], returnVals[p].toLowerCase()); // add supported value to class string rather than prop name
         }
 
         html.className += classStr;

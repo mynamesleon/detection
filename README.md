@@ -4,7 +4,7 @@ A small (just over 2kb minified) standalone browser and feature detection script
 
 It also includes polyfills for the Request and Cancel Animation Frame functions, and exposes a couple of additional functions to allow custom userAgent and CSS Property checks.
 
-These checks are made available via a "client" object in the window, and any supported properties built into the script will be added as classes to the HTML tag.
+These checks are made available via a "client" object in the window, and any supported properties built into the script will be added as lowercase classes to the HTML tag.
 
 ## The built in checks
 
@@ -33,11 +33,12 @@ These properties are booleans. If true, the property will be added as a lowercas
 - mac
 
 #### CSS property detection:
-These return the supported CSS property (and add it as a class to the HTML tag, e.g. 'WebkitPerspective'). If unsupported, the property will return false.
+These return the supported CSS property (and add it as a lowercase class to the HTML tag, e.g. 'WebkitPerspective'). If unsupported, the property will return false.
 - perspective (can be used to check translateZ or translate3d support)
 - transition
 - transform
 - willChange
+- animation
 - calc (not technically a CSS property in itself, but still useful to check for)
 
 #### Additional features
@@ -45,8 +46,8 @@ These return the supported CSS property (and add it as a class to the HTML tag, 
 - pictureElem (boolean - checks for `<picture>` element support)
 - srcsetBasic (boolean - checks for basic use of the img 'srcset' attribute with x descriptors for high pixel density displays)
 - srcsetFull (boolean - checks for full support of the img 'srcset' attribute with the use of media queries)
-- requestAnimFrame (function - uses the browser's native requestAnimationFrame function, or a polyfill if unsupported)
-- cancelAnimFrame (functions - uses the browser's native cancelAnimationFrame function, or a polyfill if unsupported)
+- requestAnimFrame (function - uses the browser's native requestAnimationFrame function, or a polyfill if unsupported. Will only be added as a class if the native browser function is supported.)
+- cancelAnimFrame (functions - uses the browser's native cancelAnimationFrame function, or a polyfill if unsupported. Will only be added as a class if the native browser function is supported.)
 
 ## Creating your own checks
 
