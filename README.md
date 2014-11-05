@@ -33,7 +33,7 @@ These properties are booleans. If true, the property will be added as a lowercas
 - mac
 
 #### CSS property detection:
-These return the supported CSS property (and add it as a lowercase class to the HTML tag, e.g. 'WebkitPerspective'). If unsupported, the property will return false.
+These return the supported CSS property (and add it as a lowercase class to the HTML tag, e.g. 'webkitperspective'). If unsupported, the property will return false.
 - perspective (can be used to check translateZ or translate3d support)
 - transition
 - transform
