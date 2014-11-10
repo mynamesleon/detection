@@ -67,8 +67,9 @@
                 return false;
             },
             addToClassStr = function(check, classToAdd){
+                classToAdd = classToAdd.toLowerCase();
                 if (check && html.className.indexOf(classToAdd) === -1){ 
-                    classStr += ' ' + classToAdd.toLowerCase();
+                    classStr += ' ' + classToAdd;
                 }
             };
 
