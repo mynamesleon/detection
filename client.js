@@ -43,7 +43,7 @@
                 retina: window.devicePixelRatio >= 1.5,
                 pictureElem: window.HTMLPictureElement !== undefined,
                 srcsetBasic: 'srcset' in img, // basic 1x / 2x descriptor use of srcset
-                srcsetFull: 'sizes' in img, // full srcset use, including media queries
+                srcsetFull: 'srcset' in img && 'sizes' in img, // full srcset use, including media queries
                 requestAnimFrame: window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame,
                 cancelAnimFrame: window.cancelAnimationFrame || window.webkitCancelRequestAnimationFrame || window.mozCancelRequestAnimationFrame
             },
