@@ -23,9 +23,10 @@ window.client = (function () {
             iOS: 'iphone|ipad|ipod',
             chrome: 'chrome',
             firefox: 'firefox',
-            opera: 'opera|opr/',
+            opera: 'opera|opr',
             android: 'android',
             mobile: 'android|webos|iphone|ipad|ipod|blackberry|windows phone|iemobile',
+            desktop: '^((?!(android|webos|iphone|ipad|ipod|blackberry|windows phone|iemobile)).)*$',
             windowsPhone: 'windows phone',
             mac: 'mac'
         },
@@ -126,4 +127,4 @@ window.client = (function () {
     html.className += classStr;
 
     return returnVals;
-})();
+}());
