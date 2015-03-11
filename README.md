@@ -39,7 +39,17 @@ These return the supported CSS property (and add it as a lowercase class to the 
 - transform
 - willChange
 - animation
+- objectFit
+- objectPosition
 - calc (not technically a CSS property in itself, but still useful to check for)
+
+#### CSS Unit detection
+These properties are also booleans. If true, the property will be added as a lowercase class to the HTML tag.
+- viewportHeight
+- viewportWidth
+- vmin
+- vmax
+- rem
 
 #### Additional features
 - retina (boolean - true if devicePixelRatio >= 1.5)
@@ -54,8 +64,10 @@ The native request and cancel animation frame functions have to be executed in t
 
 ## Creating your own checks
 
-The script exposes two additional functions via the client object: `client.uaCheck(stringToCheck)` and `client.cssCheck(stringOrArray)`
+The script exposes three additional functions via the client object: `client.uaCheck(stringToCheck)`, `client.propCheck(stringOrArray)` and `client.valCheck(cssValue, cssProp)`.
 
-`client.uaCheck` takes a string which it checks against the browser's userAgent string. You can also include basic regex here. E.g. `client.uaCheck('chrome|firefox')` will return true in both Chrome and Firefox. This function simply checks for the existence of the string, so `client.uaCheck('chro')` will also return true in Chrome.
+`client.uaCheck` takes a string which it checks against the browser's userAgent string, and returns a boolean. You can also include basic regex here. E.g. `client.uaCheck('chrome|firefox')` will return true in both Chrome and Firefox. This function simply checks for the existence of the string, so `client.uaCheck('chro')` will also return true in Chrome.
 
-`client.cssCheck` takes either a string of space delimited properties to check for, or an array of properties. E.g. `client.cssCheck('borderRadius WebkitBorderRadius')` or `client.cssCheck(['borderRadius', 'WebkitBorderRadius'])`. This checks whether or not the properties are supported on a `<div>`, and will return the **first supported value** in the sequence, or false if none are supported. E.g. `client.cssCheck('OBorderRadius MozBorderRadius WebkitBorderRadius borderRadius')` would return 'WebkitBorderRadius' in current Chrome.
+`client.propCheck` takes either a string of space delimited properties to check for, or an array of properties. E.g. `client.propCheck('borderRadius WebkitBorderRadius')` or `client.propCheck(['borderRadius', 'WebkitBorderRadius'])`. This checks whether or not the properties are supported on a `<div>`, and will return the **first supported value** in the sequence, or false if none are supported. E.g. `client.propCheck('OBorderRadius MozBorderRadius WebkitBorderRadius borderRadius')` would return 'WebkitBorderRadius' in current Chrome.
+
+`client.valCheck` takes two strings: the CSS value to check, and the CSS property to check it against (the property is set to width by default if nothing is passed in) - these checks will be made on a `<div>`, and returns a boolean. This can have multiple purposes, such as checking if a particular unit is supported, e.g. `client.valCheck('10rem', 'font-size')`. It can also be used to check that a CSS property supports a particular value, e.g. `client.valCheck('all', 'will-change')`, but can also double up as a property check for a single property, e.g. `client.valCheck('10px', '-moz-border-radius')`.

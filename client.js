@@ -36,7 +36,16 @@ window.client = (function () {
             transition: ['transition', 'WebkitTransition', 'MozTransition', 'OTransition', 'msTransition'],
             willChange: ['willChange'],
             animation: ['animation', 'WebkitAnimation', 'MozAnimation', 'OAnimation'],
+            objectFit: ['objectFit'],
+            objectPosition: ['objectPosition'],
             calc: ['calc', '-webkit-calc', '-moz-calc', '-o-calc']
+        },
+        unitChecks = {
+            viewportWidth: '1vw',
+            viewportHeight: '1vh',
+            rem: '1rem',
+            vmin: '1vmin',
+            vmax: '1vmax'
         },
         returnVals = { // additional checks that don't neatly fit into css or user agent function checks
             safari: navAgent.indexOf('chrome') > -1 ? false : navAgent.indexOf('safari') > -1,
@@ -51,7 +60,7 @@ window.client = (function () {
             var expr = new RegExp(val, ['i']);
             return expr.test(navAgent);
         },
-        cssCheck = function (props, objProp) {
+        propCheck = function (props, objProp) {
             if (typeof props === 'string') { // if a string is passed in, separate it into an array first
                 props = props.split(' ');
             }
@@ -67,6 +76,14 @@ window.client = (function () {
                 if (div.style[props[i]] !== undefined) {
                     return props[i];
                 }
+            }
+            return false;
+        },
+        valCheck = function (val, valStart) {
+            valStart = valStart || 'width';
+            div.style.cssText = valStart + ':' + val;
+            if (div.style.length) {
+                return true;
             }
             return false;
         },
@@ -96,8 +113,8 @@ window.client = (function () {
             
             // requires an array or space delimited string of css values: e.g. ['boxSizing', 'WebkitBoxSizing'] or 'boxSizing WebkitBoxSizing'
             // returns the first supported value in the sequence 
-            returnVals.cssCheck = function (valueArray) {
-                return cssCheck(valueArray);
+            returnVals.propCheck = function (valueArray) {
+                return propCheck(valueArray);
             };
 
             // takes a string (which will be converted into a regular expression) to check against the userAgent 
@@ -105,22 +122,34 @@ window.client = (function () {
             returnVals.uaCheck = function (userAgentValue) {
                 return uaCheck(userAgentValue);
             };
+            
+            // takes two arguments
+            // 1 the value to apply to a CSS property
+            // 2 the CSS property to apply the value from (1) to - uses 'width' by default
+            // returns a boolean - if (1) can be applied to (2)
+            returnVals.valCheck = function (val, startVal) {
+                return valCheck(val, startVal);
+            };
         };
 
     // cycle through uaChecks and see if they're contained in the userAgent string
-    for (var s in uaChecks) {
-        returnVals[s] = uaCheck(uaChecks[s]);
+    for (var a in uaChecks) {
+        returnVals[a] = uaCheck(uaChecks[a]);
     }
-
+    
+    for (var n in unitChecks) {
+        returnVals[n] = valCheck(unitChecks[n], 'width');
+    }
+    
     // create class string for checks so far
-    for (var u in returnVals) {
-        addToClassStr(returnVals[u], u); // add prop name if supported
+    for (var i in returnVals) {
+        addToClassStr(returnVals[i], i); // add prop name if supported
     }
 
     // cycle through css property checks
-    for (var p in propChecks) {
-        returnVals[p] = cssCheck(propChecks[p], p);
-        addToClassStr(returnVals[p], returnVals[p]); // add supported value to class string rather than prop name
+    for (var s in propChecks) {
+        returnVals[s] = propCheck(propChecks[s], s);
+        addToClassStr(returnVals[s], returnVals[s]); // add supported value to class string rather than prop name
     }
 
     funcsToExpose();
