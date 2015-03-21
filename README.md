@@ -1,6 +1,6 @@
 # Browser and Feature Detection script
 
-A small (just over 2kb minified) standalone browser and feature detection script.
+A small (under 3kb minified) standalone browser and feature detection script.
 
 It also includes polyfills for the Request and Cancel Animation Frame functions, and exposes a couple of additional functions to allow custom userAgent and CSS Property checks.
 
