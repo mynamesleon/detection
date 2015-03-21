@@ -3,11 +3,13 @@
 ~~           Leon Slater, www.lpslater.co.uk           ~~
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-window.client = (function () {
-    var navAgent = navigator.userAgent.toLowerCase(),
-        div = document.createElement('div'),
+(function (root) {
+    'use strict';
+    var i,
+        navAgent = root.navigator.userAgent.toLowerCase(),
+        div = root.document.createElement('div'),
+        html = root.document.documentElement,
         img = new Image(),
-        html = document.documentElement,
         classStr = '',
         uaChecks = { // user agent values to check against
             IE: 'msie|rv:11',
@@ -41,8 +43,8 @@ window.client = (function () {
             calc: ['calc', '-webkit-calc', '-moz-calc', '-o-calc']
         },
         unitChecks = {
-            viewportWidth: '1vw',
-            viewportHeight: '1vh',
+            vw: '1vw',
+            vh: '1vh',
             rem: '1rem',
             vmin: '1vmin',
             vmax: '1vmax'
@@ -51,8 +53,8 @@ window.client = (function () {
             safari: navAgent.indexOf('chrome') > -1 ? false : navAgent.indexOf('safari') > -1,
             retina: window.devicePixelRatio >= 1.5,
             pictureElem: window.HTMLPictureElement !== undefined,
-            srcsetBasic: 'srcset' in img, // basic 1x / 2x descriptor use of srcset
-            srcsetFull: 'srcset' in img && 'sizes' in img, // full srcset use, including media queries
+            srcsetBasic: img.srcset !== undefined, // basic 1x / 2x descriptor use of srcset
+            srcsetFull: img.srcset !== undefined && img.sizes !== undefined, // full srcset use, including media queries
             requestAnimFrame: window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame,
             cancelAnimFrame: window.cancelAnimationFrame || window.webkitCancelRequestAnimationFrame || window.mozCancelRequestAnimationFrame
         },
@@ -61,20 +63,26 @@ window.client = (function () {
             return expr.test(navAgent);
         },
         propCheck = function (props, objProp) {
+            var p,
+                prop,
+                isCalc;
+            
             if (typeof props === 'string') { // if a string is passed in, separate it into an array first
                 props = props.split(' ');
             }
-            for (var i in props) {
-                var isCalc = objProp === 'calc';
-                if (isCalc) {
-                    div.style.cssText = 'width:' + props[i] + '(1px);';
-                    if (div.style.length) {
-                        return props[i];
+            
+            for (p in props) {
+                if (props.hasOwnProperty(p)) {
+                    prop = props[p];
+                    isCalc = objProp === 'calc';
+                    if (isCalc) {
+                        div.style.cssText = 'width:' + prop + '(1px);';
+                        if (div.style.length) {
+                            return prop;
+                        }
+                    } else if (div.style[prop] !== undefined) {
+                        return prop;
                     }
-                    continue;
-                }
-                if (div.style[props[i]] !== undefined) {
-                    return props[i];
                 }
             }
             return false;
@@ -133,27 +141,35 @@ window.client = (function () {
         };
 
     // cycle through uaChecks and see if they're contained in the userAgent string
-    for (var a in uaChecks) {
-        returnVals[a] = uaCheck(uaChecks[a]);
+    for (i in uaChecks) {
+        if (uaChecks.hasOwnProperty(i)) {
+            returnVals[i] = uaCheck(uaChecks[i]);
+        }
     }
     
-    for (var n in unitChecks) {
-        returnVals[n] = valCheck(unitChecks[n], 'width');
+    for (i in unitChecks) {
+        if (unitChecks.hasOwnProperty(i)) {
+            returnVals[i] = valCheck(unitChecks[i], 'width');
+        }
     }
     
     // create class string for checks so far
-    for (var i in returnVals) {
-        addToClassStr(returnVals[i], i); // add prop name if supported
+    for (i in returnVals) {
+        if (returnVals.hasOwnProperty(i)) {
+            addToClassStr(returnVals[i], i); // add prop name if supported
+        }
     }
 
     // cycle through css property checks
-    for (var s in propChecks) {
-        returnVals[s] = propCheck(propChecks[s], s);
-        addToClassStr(returnVals[s], returnVals[s]); // add supported value to class string rather than prop name
+    for (i in propChecks) {
+        if (propChecks.hasOwnProperty(i)) {
+            returnVals[i] = propCheck(propChecks[i], i);
+            addToClassStr(returnVals[i], returnVals[i]); // add supported value to class string rather than prop name
+        }
     }
 
     funcsToExpose();
     html.className += classStr;
-
-    return returnVals;
-}());
+    root.client = returnVals;
+    
+}(window));
