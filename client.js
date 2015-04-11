@@ -1,14 +1,15 @@
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-~~         Client and Feature Detection Script         ~~
-~~           Leon Slater, www.lpslater.co.uk           ~~
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+/* 
+ * Client and Feature Detection Script
+ * Leon Slater
+ * http://mynamesleon.com
+ */
 
-(function (root) {
+(function () {
     'use strict';
     var i,
-        navAgent = root.navigator.userAgent.toLowerCase(),
-        div = root.document.createElement('div'),
-        html = root.document.documentElement,
+        navAgent = window.navigator.userAgent.toLowerCase(),
+        div = window.document.createElement('div'),
+        html = window.document.documentElement,
         img = new Image(),
         classStr = '',
         uaChecks = { // user agent values to check against
@@ -52,9 +53,9 @@
         returnVals = { // additional checks that don't neatly fit into css or user agent function checks
             safari: navAgent.indexOf('chrome') > -1 ? false : navAgent.indexOf('safari') > -1,
             retina: window.devicePixelRatio >= 1.5,
-            pictureElem: window.HTMLPictureElement !== undefined,
-            srcsetBasic: img.srcset !== undefined, // basic 1x / 2x descriptor use of srcset
-            srcsetFull: img.srcset !== undefined && img.sizes !== undefined, // full srcset use, including media queries
+            pictureElem: typeof window.HTMLPictureElement !== 'undefined',
+            srcsetBasic: typeof img.srcset !== 'undefined', // basic 1x / 2x descriptor use of srcset
+            srcsetFull: typeof img.srcset !== 'undefined' && typeof img.sizes !== 'undefined', // full srcset use, including media queries
             requestAnimFrame: window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame,
             cancelAnimFrame: window.cancelAnimationFrame || window.webkitCancelRequestAnimationFrame || window.mozCancelRequestAnimationFrame
         },
@@ -170,6 +171,6 @@
 
     funcsToExpose();
     html.className += classStr;
-    root.client = returnVals;
+    window.client = returnVals;
     
-}(window));
+}());
