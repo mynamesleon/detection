@@ -65,7 +65,6 @@ The `client.requestAnimFrame` function uses the native requestAnimationFrame if 
 
 ##### cancelAnimFrame 
 The `client.cancelAnimFrame` function uses the native cancelAnimationFrame, or a polyfill if unsupported. As above, it must be called in the context of the window to prevent an error, e.g. `client.cancelAnimFrame.call(window, functionCall)`
-- uaCheck (function)
 
 ##### uaCheck
 `client.uaCheck` takes a string which it checks against the browser's userAgent string, and returns a boolean. You can also include basic regex here. E.g. `client.uaCheck('chrome|firefox')` will return true in both Chrome and Firefox. This function simply checks for the existence of the string, so `client.uaCheck('chro')` will also return true in Chrome.
