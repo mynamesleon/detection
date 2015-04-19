@@ -53,7 +53,7 @@ window.client = window.client || new function() {
         },
         
         /*
-         * Loop to cycle through object properties
+         * loop to cycle through object properties
          * @param t {object}: target object to merge property into
          * @param o {object}: object to merge into target
          * @param f {function}: function to use when checking properties
@@ -68,10 +68,12 @@ window.client = window.client || new function() {
         },
         
         /*
-         * @return {object} feature and useragent data
+         * feature and user agent detection
+         * @return {object} feature and user agent data
          */
-        _run = function (result) {
-            var raf = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame,
+        _run = function () {
+            var result = {},
+                raf = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame,
                 caf = window.cancelAnimationFrame || window.webkitCancelRequestAnimationFrame || window.mozCancelRequestAnimationFrame;
             
             // unique checks that don't fit into the 'checks' categories
@@ -128,7 +130,7 @@ window.client = window.client || new function() {
             }(raf, caf);
             
             /*
-             * Inclusive RegEx check against the browser's User Agent
+             * inclusive RegEx check against the browser's User Agent
              * @param val {string}: expression to check
              * @return {boolean}: if expression passes
              */
@@ -138,7 +140,7 @@ window.client = window.client || new function() {
             };
 
             /*
-             * Check for CSS property support
+             * check for CSS property support
              * @param props {string|array}: array or space-delimitted string of propertie(s) to check
              *      e.g. ['boxSizing', 'WebkitBoxSizing'] or 'boxSizing WebkitBoxSizing'
              * @return {string|boolean}: returns first supported property - returns false if none are supported
@@ -178,7 +180,7 @@ window.client = window.client || new function() {
             };
 
             /*
-             * Add lowercase property name as class to HTML tag if supported
+             * add lowercase property name as class to HTML tag if supported
              * @return {boolean}: if property and value applied can be used
              */
             result.setClasses = function () {
@@ -201,6 +203,6 @@ window.client = window.client || new function() {
             
         };
 
-    return new _run(new Object);
+    return new _run();
     
 }();
