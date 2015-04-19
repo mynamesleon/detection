@@ -4,173 +4,203 @@
  * http://mynamesleon.com
  */
 
-(function () {
+window.client = window.client || new function() {
     'use strict';
-    var i,
-        navAgent = window.navigator.userAgent.toLowerCase(),
-        div = window.document.createElement('div'),
-        html = window.document.documentElement,
-        img = new Image(),
-        classStr = '',
-        uaChecks = { // user agent values to check against
-            IE: 'msie|rv:11',
-            IE7: 'msie 7.0',
-            IE8: 'msie 8.0',
-            IE9: 'msie 9.0',
-            IE10: 'msie 10.0',
-            IE11: 'rv:11.0',
-            oldIE: 'msie 7.0|msie 8.0',
-            iPad: 'ipad',
-            iPhone: 'iphone',
-            iPod: 'ipod',
-            iOS: 'iphone|ipad|ipod',
-            chrome: 'chrome',
-            firefox: 'firefox',
-            opera: 'opera|opr',
-            android: 'android',
-            mobile: 'android|webos|iphone|ipad|ipod|blackberry|windows phone|iemobile',
-            desktop: '^((?!(android|webos|iphone|ipad|ipod|blackberry|windows phone|iemobile)).)*$',
-            windowsPhone: 'windows phone',
-            mac: 'mac'
-        },
-        propChecks = { // css properties to check against 
-            perspective: ['perspective', 'WebkitPerspective', 'MozPerspective', 'OPerspective', 'msPerspective'], // translateZ support
-            transform: ['transform', 'WebkitTransform', 'MozTransform', 'OTransform', 'msTransform'],
-            transition: ['transition', 'WebkitTransition', 'MozTransition', 'OTransition', 'msTransition'],
-            willChange: ['willChange'],
-            animation: ['animation', 'WebkitAnimation', 'MozAnimation', 'OAnimation'],
-            objectFit: ['objectFit'],
-            objectPosition: ['objectPosition'],
-            calc: ['calc', '-webkit-calc', '-moz-calc', '-o-calc']
-        },
-        unitChecks = {
-            vw: '1vw',
-            vh: '1vh',
-            rem: '1rem',
-            vmin: '1vmin',
-            vmax: '1vmax'
-        },
-        returnVals = { // additional checks that don't neatly fit into css or user agent function checks
-            safari: navAgent.indexOf('chrome') > -1 ? false : navAgent.indexOf('safari') > -1,
-            retina: window.devicePixelRatio >= 1.5,
-            pictureElem: typeof window.HTMLPictureElement !== 'undefined',
-            srcsetBasic: typeof img.srcset !== 'undefined', // basic 1x / 2x descriptor use of srcset
-            srcsetFull: typeof img.srcset !== 'undefined' && typeof img.sizes !== 'undefined', // full srcset use, including media queries
-            requestAnimFrame: window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame,
-            cancelAnimFrame: window.cancelAnimationFrame || window.webkitCancelRequestAnimationFrame || window.mozCancelRequestAnimationFrame
-        },
-        uaCheck = function (val) {
-            var expr = new RegExp(val, ['i']);
-            return expr.test(navAgent);
-        },
-        propCheck = function (props, objProp) {
-            var p,
-                prop,
-                isCalc;
-            
-            if (typeof props === 'string') { // if a string is passed in, separate it into an array first
-                props = props.split(' ');
+    
+    var _navAgent = window.navigator.userAgent.toLowerCase(),
+        _div = window.document.createElement('div'),
+        _img = new Image(),
+        
+        _checks = {
+            uas: {
+                IE: 'msie|rv:11',
+                IE7: 'msie 7.0',
+                IE8: 'msie 8.0',
+                IE9: 'msie 9.0',
+                IE10: 'msie 10.0',
+                IE11: 'rv:11.0',
+                oldIE: 'msie 7.0|msie 8.0',
+                iPad: 'ipad',
+                iPhone: 'iphone',
+                iPod: 'ipod',
+                iOS: 'iphone|ipad|ipod',
+                chrome: 'chrome',
+                firefox: 'firefox',
+                opera: 'opera|opr',
+                android: 'android',
+                mobile: 'android|webos|iphone|ipad|ipod|blackberry|windows phone|iemobile',
+                desktop: '^((?!(android|webos|iphone|ipad|ipod|blackberry|windows phone|iemobile)).)*$',
+                windowsPhone: 'windows phone',
+                mac: 'mac'
+            },
+            props: {
+                perspective: ['perspective', 'WebkitPerspective', 'MozPerspective', 'OPerspective', 'msPerspective'], // translateZ support
+                transform: ['transform', 'WebkitTransform', 'MozTransform', 'OTransform', 'msTransform'],
+                transition: ['transition', 'WebkitTransition', 'MozTransition', 'OTransition', 'msTransition'],
+                willChange: ['willChange'],
+                animation: ['animation', 'WebkitAnimation', 'MozAnimation', 'OAnimation'],
+                objectFit: ['objectFit'],
+                objectPosition: ['objectPosition']
+            },
+            // css values to check support of
+            units: {
+                vw: '1vw',
+                vh: '1vh',
+                rem: '1rem',
+                vmin: '1vmin',
+                vmax: '1vmax'
             }
+        },
+        
+        /*
+         * Loop to cycle through object properties
+         * @param t {object}: target object to merge property into
+         * @param o {object}: object to merge into target
+         * @param f {function}: function to use when checking properties
+         */
+        _merge = function (t, o, f) {
+            var i;
+            for (i in o) {
+                if (o.hasOwnProperty(i)) {
+                    t[i] = f(o[i]);
+                }
+            }
+        },
+        
+        /*
+         * @return {object} feature and useragent data
+         */
+        _run = function (result) {
+            var raf = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame,
+                caf = window.cancelAnimationFrame || window.webkitCancelRequestAnimationFrame || window.mozCancelRequestAnimationFrame;
             
-            for (p in props) {
-                if (props.hasOwnProperty(p)) {
-                    prop = props[p];
-                    isCalc = objProp === 'calc';
-                    if (isCalc) {
-                        div.style.cssText = 'width:' + prop + '(1px);';
-                        if (div.style.length) {
-                            return prop;
+            // unique checks that don't fit into the 'checks' categories
+            result.safari = _navAgent.indexOf('chrome') > -1 ? false : _navAgent.indexOf('safari') > -1;
+            result.retina = window.devicePixelRatio >= 1.5;
+            result.pictureElem = typeof window.HTMLPictureElement !== 'undefined';
+            result.srcsetBasic = typeof _img.srcset !== 'undefined'; // basic 1x / 2x descriptor use of srcset
+            result.srcsetFull = typeof _img.srcset !== 'undefined' && typeof _img.sizes !== 'undefined'; // full srcset use, including media queries
+            
+            /*
+             * calc check
+             * @return {string|boolean}: supported calc string, or false if unsupported
+             */
+            result.calc = (function (props) {
+                for (var i = 0; i < props.length; i += 1) {
+                    if (props.hasOwnProperty(i)) {
+                        _div.style.cssText = 'width:' + props[i] + '(1px);';
+                        if (_div.style.length) {
+                            return props[i];
                         }
-                    } else if (div.style[prop] !== undefined) {
-                        return prop;
                     }
                 }
-            }
-            return false;
-        },
-        valCheck = function (val, valStart) {
-            valStart = valStart || 'width';
-            div.style.cssText = valStart + ':' + val;
-            if (div.style.length) {
-                return true;
-            }
-            return false;
-        },
-        addToClassStr = function (check, classToAdd) {
-            if (check) {
-                classToAdd = classToAdd.toLowerCase();
-                if (html.className.indexOf(classToAdd) === -1) {
-                    classStr += ' ' + classToAdd;
-                }
-            }
-        },
-        funcsToExpose = function () { // functions to expose in the client object
-            // polyfill for requestAnimationFrame and cancelAnimationFrame - adapted from original by Erik Moller
-            if ((!returnVals.requestAnimFrame) || (!returnVals.cancelAnimFrame)) {
-                var lastTime = 0;
-                returnVals.requestAnimFrame = function (callback, element) {
-                    var currTime = new Date().getTime(),
-                        timeToCall = Math.max(0, 16 - (currTime - lastTime)),
-                        id = window.setTimeout(function () { callback(currTime + timeToCall); }, timeToCall);
-                    lastTime = currTime + timeToCall;
-                    return id;
-                };
-                returnVals.cancelAnimFrame = function (id) {
-                    clearTimeout(id);
-                };
-            }
+                return false;
+            }(['calc', '-webkit-calc', '-moz-calc', '-o-calc']));
             
-            // requires an array or space delimited string of css values: e.g. ['boxSizing', 'WebkitBoxSizing'] or 'boxSizing WebkitBoxSizing'
-            // returns the first supported value in the sequence 
-            returnVals.propCheck = function (valueArray) {
-                return propCheck(valueArray);
+            /*
+             * request animation frame
+             * @return {function}: native request animation frame if supported
+             *      polyfill adapted from original by Erik Moller if not
+             */
+            result.requestAnimFrame = new function (r, c) {
+                if (typeof r !== 'undefined' && typeof r !== 'undefined') {
+                    return r;
+                }
+                var l;
+                return function (f) {
+                    var c = new Date().getTime(),
+                        t = Math.max(0, 16 - (currTime - lastTime));
+                    l = currTime + timeToCall;
+                    return window.setTimeout(function () { f(l); }, t);
+                }
+            }(raf, caf);
+            
+            /*
+             * cancel animation frame
+             * @return {function}: native cancel animation frame if supported
+             *      polyfill adapted from original by Erik Moller if not
+             */
+            result.cancelAnimFrame = new function (r, c) {
+                if (typeof r !== 'undefined' && typeof c !== 'undefined') {
+                    return c;
+                }
+                return function(id) { window.clearTimeout(id); }
+            }(raf, caf);
+            
+            /*
+             * Inclusive RegEx check against the browser's User Agent
+             * @param val {string}: expression to check
+             * @return {boolean}: if expression passes
+             */
+            result.uaCheck = function (val) {
+                var expr = new RegExp(val, ['i']);
+                return expr.test(_navAgent);
             };
 
-            // takes a string (which will be converted into a regular expression) to check against the userAgent 
-            // e.g. 'firefox|chrome' will return true in both firefox and chrome
-            returnVals.uaCheck = function (userAgentValue) {
-                return uaCheck(userAgentValue);
+            /*
+             * Check for CSS property support
+             * @param props {string|array}: array or space-delimitted string of propertie(s) to check
+             *      e.g. ['boxSizing', 'WebkitBoxSizing'] or 'boxSizing WebkitBoxSizing'
+             * @return {string|boolean}: returns first supported property - returns false if none are supported
+             */
+            result.propCheck = function (props, objProp) {
+                var p,
+                    prop;
+
+                if (typeof props === 'string') { // if a string is passed in, separate it into an array first
+                    props = props.split(' ');
+                }
+
+                for (p in props) {
+                    if (props.hasOwnProperty(p)) {
+                        prop = props[p];
+                        if (typeof _div.style[prop] !== 'undefined') {
+                            return prop;
+                        }
+                    }
+                }
+                return false;
+            };
+
+            /*
+             * CSS check with custom defined property and value
+             * @param val {string}: CSS value to use
+             * @param prop {string} optional: CSS property to use - will use 'width' if none is passed in
+             * @return {boolean}: if property and value applied can be used
+             */
+            result.valCheck = function (val, prop) {
+                prop = prop || 'width';
+                _div.style.cssText = prop + ':' + val;
+                if (_div.style.length) {
+                    return true;
+                }
+                return false;
+            };
+
+            /*
+             * Add lowercase property name as class to HTML tag if supported
+             * @return {boolean}: if property and value applied can be used
+             */
+            result.setClasses = function () {
+                var classesToAdd = '',
+                    i;
+                for (i in result) {
+                    if (result.hasOwnProperty(i)) {
+                        if (typeof result[i] !== 'function' && result[i]) {
+                            classesToAdd += ' ' + i.toLowerCase();
+                        }
+                    }
+                }
+                window.document.documentElement.className += classesToAdd;
             };
             
-            // takes two arguments
-            // 1 the value to apply to a CSS property
-            // 2 the CSS property to apply the value from (1) to - uses 'width' by default
-            // returns a boolean - if (1) can be applied to (2)
-            returnVals.valCheck = function (val, startVal) {
-                return valCheck(val, startVal);
-            };
+            _merge(result, _checks.props, result.propCheck); // cycle through css property checks
+            _merge(result, _checks.units, result.valCheck); // cycle through unit checks
+            _merge(result, _checks.uas, result.uaCheck); // cycle through uaChecks and see if they're contained in the userAgent string
+            return result;
+            
         };
 
-    // cycle through uaChecks and see if they're contained in the userAgent string
-    for (i in uaChecks) {
-        if (uaChecks.hasOwnProperty(i)) {
-            returnVals[i] = uaCheck(uaChecks[i]);
-        }
-    }
+    return new _run(new Object);
     
-    for (i in unitChecks) {
-        if (unitChecks.hasOwnProperty(i)) {
-            returnVals[i] = valCheck(unitChecks[i], 'width');
-        }
-    }
-    
-    // create class string for checks so far
-    for (i in returnVals) {
-        if (returnVals.hasOwnProperty(i)) {
-            addToClassStr(returnVals[i], i); // add prop name if supported
-        }
-    }
-
-    // cycle through css property checks
-    for (i in propChecks) {
-        if (propChecks.hasOwnProperty(i)) {
-            returnVals[i] = propCheck(propChecks[i], i);
-            addToClassStr(returnVals[i], returnVals[i]); // add supported value to class string rather than prop name
-        }
-    }
-
-    funcsToExpose();
-    html.className += classStr;
-    window.client = returnVals;
-    
-}());
+}();
