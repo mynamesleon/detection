@@ -4,7 +4,7 @@
  * http://mynamesleon.com
  */
 
-window.client = window.client || new function() {
+window.client = window.client || new function () {
     'use strict';
     
     var _navAgent = window.navigator.userAgent.toLowerCase(),
@@ -105,7 +105,7 @@ window.client = window.client || new function() {
              *      polyfill adapted from original by Erik Moller if not
              */
             result.requestAnimFrame = new function (r, c) {
-                if (typeof r !== 'undefined' && typeof r !== 'undefined') {
+                if (typeof r !== 'undefined' && typeof c !== 'undefined') {
                     return r;
                 }
                 var l;
