@@ -7,11 +7,13 @@
 window.client = window.client || new function () {
     'use strict';
     
-    var _navAgent = window.navigator.userAgent.toLowerCase(),
-        _div = window.document.createElement('div'),
+    var _navAgent = window.navigator.userAgent,
+        _doc = window.document,
+        _div = _doc.createElement('div'),
         _img = new Image(),
         
         _checks = {
+            // user agent checks
             uas: {
                 IE: 'msie|rv:11',
                 IE7: 'msie 7.0',
@@ -33,6 +35,7 @@ window.client = window.client || new function () {
                 windowsPhone: 'windows phone',
                 mac: 'mac'
             },
+            // css properties
             props: {
                 perspective: ['perspective', 'WebkitPerspective', 'MozPerspective', 'OPerspective', 'msPerspective'], // translateZ support
                 transform: ['transform', 'WebkitTransform', 'MozTransform', 'OTransform', 'msTransform'],
@@ -42,7 +45,7 @@ window.client = window.client || new function () {
                 objectFit: ['objectFit'],
                 objectPosition: ['objectPosition']
             },
-            // css values to check support of
+            // css units
             units: {
                 vw: '1vw',
                 vh: '1vh',
@@ -87,7 +90,7 @@ window.client = window.client || new function () {
              * calc check
              * @return {string|boolean}: supported calc string, or false if unsupported
              */
-            result.calc = (function (props) {
+            result.calc = new function (props) {
                 for (var i = 0; i < props.length; i += 1) {
                     if (props.hasOwnProperty(i)) {
                         _div.style.cssText = 'width:' + props[i] + '(1px);';
@@ -97,7 +100,7 @@ window.client = window.client || new function () {
                     }
                 }
                 return false;
-            }(['calc', '-webkit-calc', '-moz-calc', '-o-calc']));
+            }(['calc', '-webkit-calc', '-moz-calc', '-o-calc']);
             
             /*
              * request animation frame
@@ -145,11 +148,11 @@ window.client = window.client || new function () {
              *      e.g. ['boxSizing', 'WebkitBoxSizing'] or 'boxSizing WebkitBoxSizing'
              * @return {string|boolean}: returns first supported property - returns false if none are supported
              */
-            result.propCheck = function (props, objProp) {
+            result.propCheck = function (props) {
                 var p,
                     prop;
 
-                if (typeof props === 'string') { // if a string is passed in, separate it into an array first
+                if (typeof props === 'string') {
                     props = props.split(' ');
                 }
 
@@ -181,7 +184,6 @@ window.client = window.client || new function () {
 
             /*
              * add lowercase property name as class to HTML tag if supported
-             * @return {boolean}: if property and value applied can be used
              */
             result.setClasses = function () {
                 var classesToAdd = '',
@@ -193,7 +195,7 @@ window.client = window.client || new function () {
                         }
                     }
                 }
-                window.document.documentElement.className += classesToAdd;
+                _doc.documentElement.className += classesToAdd;
             };
             
             _merge(result, _checks.props, result.propCheck); // cycle through css property checks
