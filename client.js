@@ -6,12 +6,12 @@
 
 window.client = window.client || new function () {
     'use strict';
-    
+
     var _navAgent = window.navigator.userAgent,
         _doc = window.document,
         _div = _doc.createElement('div'),
         _img = new Image(),
-        
+
         _checks = {
             // user agent checks
             uas: {
@@ -54,7 +54,7 @@ window.client = window.client || new function () {
                 vmax: '1vmax'
             }
         },
-        
+
         /*
          * loop to cycle through object properties
          * @param t {object}: target object to merge property into
@@ -69,39 +69,37 @@ window.client = window.client || new function () {
                 }
             }
         },
-        
+
         /*
          * feature and user agent detection
          * @return {object} feature and user agent data
          */
         _run = function () {
-            var result = {},
+            var result = this,
                 raf = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame,
                 caf = window.cancelAnimationFrame || window.webkitCancelRequestAnimationFrame || window.mozCancelRequestAnimationFrame;
-            
+
             // unique checks that don't fit into the 'checks' categories
             result.safari = _navAgent.indexOf('chrome') > -1 ? false : _navAgent.indexOf('safari') > -1;
             result.retina = window.devicePixelRatio >= 1.5;
             result.pictureElem = typeof window.HTMLPictureElement !== 'undefined';
             result.srcsetBasic = typeof _img.srcset !== 'undefined'; // basic 1x / 2x descriptor use of srcset
             result.srcsetFull = typeof _img.srcset !== 'undefined' && typeof _img.sizes !== 'undefined'; // full srcset use, including media queries
-            
+
             /*
              * calc check
              * @return {string|boolean}: supported calc string, or false if unsupported
              */
-            result.calc = new function (props) {
-                for (var i = 0; i < props.length; i += 1) {
-                    if (props.hasOwnProperty(i)) {
-                        _div.style.cssText = 'width:' + props[i] + '(1px);';
-                        if (_div.style.length) {
-                            return props[i];
-                        }
+            result.calc = new function (props, i) {
+                for (i = 0; i < props.length; i += 1) {
+                    _div.style.cssText = 'width:' + props[i] + '(1px);';
+                    if (_div.style.length) {
+                        return props[i];
                     }
                 }
                 return false;
             }(['calc', '-webkit-calc', '-moz-calc', '-o-calc']);
-            
+
             /*
              * request animation frame
              * @return {function}: native request animation frame if supported
@@ -114,12 +112,14 @@ window.client = window.client || new function () {
                 var l;
                 return function (f) {
                     var c = new Date().getTime(),
-                        t = Math.max(0, 16 - (currTime - lastTime));
-                    l = currTime + timeToCall;
-                    return window.setTimeout(function () { f(l); }, t);
-                }
+                        t = Math.max(0, 16 - (c - l));
+                    l = c + t;
+                    return window.setTimeout(function () {
+                        f(l);
+                    }, t);
+                };
             }(raf, caf);
-            
+
             /*
              * cancel animation frame
              * @return {function}: native cancel animation frame if supported
@@ -129,9 +129,11 @@ window.client = window.client || new function () {
                 if (typeof r !== 'undefined' && typeof c !== 'undefined') {
                     return c;
                 }
-                return function(id) { window.clearTimeout(id); }
+                return function (id) {
+                    window.clearTimeout(id);
+                };
             }(raf, caf);
-            
+
             /*
              * inclusive RegEx check against the browser's User Agent
              * @param val {string}: expression to check
@@ -156,12 +158,10 @@ window.client = window.client || new function () {
                     props = props.split(' ');
                 }
 
-                for (p in props) {
-                    if (props.hasOwnProperty(p)) {
-                        prop = props[p];
-                        if (typeof _div.style[prop] !== 'undefined') {
-                            return prop;
-                        }
+                for (p = 0; p < props.length; props += 1) {
+                    prop = props[p];
+                    if (typeof _div.style[prop] !== 'undefined') {
+                        return prop;
                     }
                 }
                 return false;
@@ -197,14 +197,13 @@ window.client = window.client || new function () {
                 }
                 _doc.documentElement.className += classesToAdd;
             };
-            
+
             _merge(result, _checks.props, result.propCheck); // cycle through css property checks
             _merge(result, _checks.units, result.valCheck); // cycle through unit checks
             _merge(result, _checks.uas, result.uaCheck); // cycle through uaChecks and see if they're contained in the userAgent string
-            return result;
-            
+
         };
 
     return new _run();
-    
+
 }();

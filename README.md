@@ -11,7 +11,7 @@ These checks are made available via a "client" object in the window.
 Each of these is listed with the property name in the client object, e.g. `client.IE7`
 
 ### Browser / Device detection:
-These properties are booleans. If true, the property will be added as a lowercase class to the HTML tag.
+These properties are booleans.
 - IE7
 - IE8
 - IE9
@@ -34,7 +34,7 @@ These properties are booleans. If true, the property will be added as a lowercas
 - mac
 
 ### CSS property detection:
-These return the supported CSS property (and add it as a lowercase class to the HTML tag, e.g. 'webkitperspective'). If unsupported, the property will return false.
+These return the supported CSS property if supported (e.g. 'WebkitPerspective'). If unsupported, the property will return false.
 - perspective (can be used to check translateZ or translate3d support)
 - transition
 - transform
@@ -45,7 +45,7 @@ These return the supported CSS property (and add it as a lowercase class to the 
 - calc (not technically a CSS property in itself, but still useful to check for)
 
 ### CSS Unit detection
-These properties are also booleans. If true, the property will be added as a lowercase class to the HTML tag.
+These properties are also booleans.
 - vh
 - vw
 - vmin
@@ -61,7 +61,7 @@ These properties are also booleans. If true, the property will be added as a low
 ### Functions
 
 ##### setClasses
-Calling `client.setClasses()` will cycle through all of the `client` properties and add the property name as a lowercase class to the HTML tag as long as the property is not false.
+Calling `client.setClasses()` will cycle through all of the `client` properties and add the property name as a lowercase class to the HTML tag as long as the property is not false, or a function.
 
 ##### requestAnimFrame 
 The `client.requestAnimFrame` function uses the browser's native requestAnimationFrame if supported, or a polyfill if not. It must be called in the context of the window to prevent an error, e.g. `client.requestAnimFrame.call(window, functionCall)`
