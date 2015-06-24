@@ -186,16 +186,22 @@ window.client = window.client || new function () {
              * add lowercase property name as class to HTML tag if supported
              */
             result.setClasses = function () {
-                var classesToAdd = '',
+                var cur = _doc.documentElement.className + ' ',
+                    a = '',
+                    c,
                     i;
+                
                 for (i in result) {
                     if (result.hasOwnProperty(i)) {
                         if (typeof result[i] !== 'function' && result[i]) {
-                            classesToAdd += ' ' + i.toLowerCase();
+                            c = i.toLowerCase();
+                            if (cur.indexOf(c + ' ') === -1) {
+                                a += ' ' + c;
+                            }
                         }
                     }
                 }
-                _doc.documentElement.className += classesToAdd;
+                _doc.documentElement.className += a;
             };
 
             _merge(result, _checks.props, result.propCheck); // cycle through css property checks
