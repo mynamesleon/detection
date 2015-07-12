@@ -1,4 +1,4 @@
-/* 
+/*
  * Client and Feature Detection Script
  * Leon Slater
  * http://mynamesleon.com
@@ -90,7 +90,7 @@ window.client = window.client || new function () {
              * calc check
              * @return {string|boolean}: supported calc string, or false if unsupported
              */
-            result.calc = new function (props, i) {
+            result.calc = (function (props, i) {
                 for (i = 0; i < props.length; i += 1) {
                     _div.style.cssText = 'width:' + props[i] + '(1px);';
                     if (_div.style.length) {
@@ -98,14 +98,14 @@ window.client = window.client || new function () {
                     }
                 }
                 return false;
-            }(['calc', '-webkit-calc', '-moz-calc', '-o-calc']);
+            }(['calc', '-webkit-calc', '-moz-calc', '-o-calc']));
 
             /*
              * request animation frame
              * @return {function}: native request animation frame if supported
              *      polyfill adapted from original by Erik Moller if not
              */
-            result.requestAnimFrame = new function (r, c) {
+            result.requestAnimFrame = (function (r, c) {
                 if (typeof r !== 'undefined' && typeof c !== 'undefined') {
                     return r;
                 }
@@ -118,21 +118,21 @@ window.client = window.client || new function () {
                         f(l);
                     }, t);
                 };
-            }(raf, caf);
+            }(raf, caf));
 
             /*
              * cancel animation frame
              * @return {function}: native cancel animation frame if supported
              *      polyfill adapted from original by Erik Moller if not
              */
-            result.cancelAnimFrame = new function (r, c) {
+            result.cancelAnimFrame = (function (r, c) {
                 if (typeof r !== 'undefined' && typeof c !== 'undefined') {
                     return c;
                 }
                 return function (id) {
                     window.clearTimeout(id);
                 };
-            }(raf, caf);
+            }(raf, caf));
 
             /*
              * inclusive RegEx check against the browser's User Agent
@@ -186,16 +186,16 @@ window.client = window.client || new function () {
              * add lowercase property name as class to HTML tag if supported
              */
             result.setClasses = function () {
-                var cur = _doc.documentElement.className + ' ',
+                var cur = ' ' + _doc.documentElement.className + ' ',
                     a = '',
                     c,
                     i;
-                
+
                 for (i in result) {
                     if (result.hasOwnProperty(i)) {
                         if (typeof result[i] !== 'function' && result[i]) {
                             c = i.toLowerCase();
-                            if (cur.indexOf(c + ' ') === -1) {
+                            if (cur.indexOf(' ' + c + ' ') === -1) {
                                 a += ' ' + c;
                             }
                         }
