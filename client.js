@@ -2,9 +2,11 @@
  * Client and Feature Detection Script
  * Leon Slater
  * http://mynamesleon.com
+ * github.com/mynamesleon/detection
  */
 
 window.client = window.client || new function () {
+
     'use strict';
 
     var _navAgent = window.navigator.userAgent,
@@ -169,12 +171,17 @@ window.client = window.client || new function () {
 
             /*
              * CSS check with custom defined property and value
+             * @param prop {string}: CSS property to use
              * @param val {string}: CSS value to use
-             * @param prop {string} optional: CSS property to use - will use 'width' if none is passed in
              * @return {boolean}: if property and value applied can be used
+             * if only one argument passed in, will be taken as value applied to width
              */
-            result.valCheck = function (val, prop) {
-                prop = prop || 'width';
+            result.valCheck = function (prop, val) {
+                if (typeof val === 'undefined') { // if only one param passed in, assume it is the value to be used
+                    val = prop;
+                    prop = 'width'; // set prop to width as default value
+                }
+
                 _div.style.cssText = prop + ':' + val;
                 if (_div.style.length) {
                     return true;

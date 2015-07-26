@@ -63,10 +63,10 @@ These properties are also booleans.
 ##### setClasses
 Calling `client.setClasses()` will cycle through all of the `client` properties and add the property name as a lowercase class to the HTML tag as long as the property is not false, or a function.
 
-##### requestAnimFrame 
+##### requestAnimFrame
 The `client.requestAnimFrame` function uses the browser's native requestAnimationFrame if supported, or a polyfill if not. It must be called in the context of the window to prevent an error, e.g. `client.requestAnimFrame.call(window, functionCall)`
 
-##### cancelAnimFrame 
+##### cancelAnimFrame
 The `client.cancelAnimFrame` function also uses the browser's native cancelAnimationFrame, or a polyfill if unsupported. As above, it must be called in the context of the window to prevent an error, e.g. `client.cancelAnimFrame.call(window, id)`
 
 ##### uaCheck
@@ -76,7 +76,9 @@ The `client.cancelAnimFrame` function also uses the browser's native cancelAnima
 `client.propCheck` takes either a string of space delimited properties to check for, or an array of properties. E.g. `client.propCheck('borderRadius WebkitBorderRadius')` or `client.propCheck(['borderRadius', 'WebkitBorderRadius'])`. This checks whether or not the properties are supported on a `<div>`, and will return the **first supported value** in the sequence, or false if none are supported. E.g. `client.propCheck('OBorderRadius MozBorderRadius WebkitBorderRadius borderRadius')` would return 'WebkitBorderRadius' in current Chrome.
 
 ##### valCheck
-`client.valCheck` takes two strings: the CSS value to check, and the CSS property to check it against (the property is set to width by default if nothing is passed in) - these checks will be made on a `<div>`, and returns a boolean. This can have multiple purposes, such as checking if a particular unit is supported, e.g. `client.valCheck('10rem', 'font-size')`. It can also be used to check that a CSS property supports a particular value, e.g. `client.valCheck('all', 'will-change')`. And, if you don't want to use the `client.propCheck` function, `client.valCheck` can also be used as a property check for a **single** property, e.g. `client.valCheck('10px', '-moz-border-radius')`.
+`client.valCheck` takes two strings: a CSS property, and a value to check against it. It can also take one string: the value to use, which will be checked against the width property. These checks will be made on a `<div>`, and returns a boolean.
+
+This can have multiple purposes, such as checking if a particular unit is supported, e.g. `client.valCheck('font-size', '10rem')`. It can also be used to check that a CSS property supports a particular value, e.g. `client.valCheck('will-change', 'all')`. And, if you don't want to use the `client.propCheck` function, `client.valCheck` can also be used as a property check for a **single** property, e.g. `client.valCheck('-moz-border-radius', '10px')`.
 
 ## Contributing
 
