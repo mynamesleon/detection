@@ -6,7 +6,6 @@
  */
 
 window.client = window.client || new function () {
-
     'use strict';
 
     var _navAgent = window.navigator.userAgent,
