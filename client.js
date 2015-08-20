@@ -159,7 +159,7 @@ window.client = window.client || new function () {
                     props = props.split(' ');
                 }
 
-                for (p = 0; p < props.length; props += 1) {
+                for (p = 0; p < props.length; p += 1) {
                     prop = props[p];
                     if (typeof _div.style[prop] !== 'undefined') {
                         return prop;
@@ -181,7 +181,7 @@ window.client = window.client || new function () {
                     prop = 'width'; // set prop to width as default value
                 }
 
-                _div.style.cssText = prop + ':' + val;
+                _div.style.cssText = prop + ':' + val + ';';
                 if (_div.style.length) {
                     return true;
                 }
