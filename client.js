@@ -23,6 +23,7 @@ window.client = window.client || new function () {
                 IE10: 'msie 10.0',
                 IE11: 'rv:11.0',
                 oldIE: 'msie 7.0|msie 8.0',
+                edge: 'edge/12',
                 iPad: 'ipad',
                 iPhone: 'iphone',
                 iPod: 'ipod',

@@ -19,6 +19,7 @@ These properties are booleans.
 - IE11
 - oldIE (IE7 or IE8),
 - IE (any of the above)
+- edge
 - chrome
 - firefox
 - opera
@@ -33,8 +34,10 @@ These properties are booleans.
 - desktop (not android, webos, ios, blackberry, windows phone, or iemobile)
 - mac
 
+These are dependent on the browser's user agent string, so should not be relied on. They can also report some false positives. For instance, recent versions of Opera like to think that they are Chrome (because they pretty much are...), and likewise Microsoft Edge includes the words "Chrome" and "Safari" in its user agent string.
+
 ### CSS property detection:
-These return the supported CSS property if supported (e.g. 'WebkitPerspective'). If unsupported, the property will return false.
+These return the supported CSS property as a string (e.g. 'WebkitPerspective'). If unsupported, the property will return false.
 - perspective (can be used to check translateZ or translate3d support)
 - transition
 - transform
