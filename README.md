@@ -1,6 +1,6 @@
 # Browser and Feature Detection script
 
-A small (under 3kb minified) standalone browser and feature detection script.
+A tiny standalone browser and feature detection script.
 
 It also includes polyfills for the Request and Cancel Animation Frame functions, and exposes a couple of additional functions to allow custom userAgent and CSS Property checks.
 
@@ -61,16 +61,16 @@ These properties are also booleans.
 - srcsetBasic (boolean - checks for basic use of the img 'srcset' attribute with x descriptors for high pixel density displays)
 - srcsetFull (boolean - checks for full support of the img 'srcset' attribute with the use of media queries)
 
-### Functions
+### Methods
 
 ##### setClasses
 Calling `client.setClasses()` will cycle through all of the `client` properties and add the property name as a lowercase class to the HTML tag as long as the property is not false, or a function.
 
 ##### requestAnimFrame
-The `client.requestAnimFrame` function uses the browser's native requestAnimationFrame if supported, or a polyfill if not. It must be called in the context of the window to prevent an error, e.g. `client.requestAnimFrame.call(window, functionCall)`
+The `client.requestAnimFrame` function uses the browser's native requestAnimationFrame if supported, or a polyfill if not. This will return an ID which can be passed into `client.cancelAnimFrame` to cancel the function call.
 
 ##### cancelAnimFrame
-The `client.cancelAnimFrame` function also uses the browser's native cancelAnimationFrame, or a polyfill if unsupported. As above, it must be called in the context of the window to prevent an error, e.g. `client.cancelAnimFrame.call(window, id)`
+The `client.cancelAnimFrame` function also uses the browser's native cancelAnimationFrame, or a polyfill if unsupported.
 
 ##### uaCheck
 `client.uaCheck` takes a string which it checks against the browser's userAgent string, and returns a boolean. You can also include basic regex here. E.g. `client.uaCheck('chrome|firefox')` will return true in both Chrome and Firefox. This function simply checks for the existence of the string, so `client.uaCheck('chro')` will also return true in Chrome.
@@ -85,6 +85,6 @@ This can have multiple purposes, such as checking if a particular unit is suppor
 
 ## Contributing
 
-By all means, feel free to add your own checks to the source code if you think they'd be of use - the sections for each of the checks are clearly labelled in their respective objects in the non-minified script inside the `_checks` object: `uas` for userAgent checks, `props` for CSS property checks, `units` for CSS unit checks, and any unique checks that don't fit into those categories are defined at the top of the `_run` function.
+By all means, feel free to add your own checks to the source code if you think they'd be of use - the sections for each of the checks are clearly labelled in their respective objects in the non-minified script inside the `_checks` object: `uas` for userAgent checks, `props` for CSS property checks, `units` for CSS unit checks, and `unique` any unique checks that either don't fit into those categories or require extra logic.
 
 In the interest of simplicity (and reduced file size!), I've deliberately only added values, units, and browser checks that I'm likely to actually need to check for.

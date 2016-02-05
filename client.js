@@ -12,6 +12,8 @@ window.client = window.client || new function () {
         _doc = window.document,
         _div = _doc.createElement('div'),
         _img = new Image(),
+        _raf = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame,
+        _caf = window.cancelAnimationFrame || window.webkitCancelRequestAnimationFrame || window.mozCancelRequestAnimationFrame,
 
         _checks = {
             // user agent checks
@@ -54,6 +56,64 @@ window.client = window.client || new function () {
                 rem: '1rem',
                 vmin: '1vmin',
                 vmax: '1vmax'
+            },
+            // unique checks - functions are called when checked in the context of 'result' from _run
+            unique: {
+                safari: _navAgent.indexOf('chrome') > -1 ? false : _navAgent.indexOf('safari') > -1,
+                retina: window.devicePixelRatio >= 1.5,
+                pictureElem: typeof window.HTMLPictureElement !== 'undefined',
+                srcsetBasic: typeof _img.srcset !== 'undefined', // basic 1x / 2x descriptor use of srcset
+                srcsetFull: typeof _img.srcset !== 'undefined' && typeof _img.sizes !== 'undefined', // full srcset use, including media queries
+
+                /*
+                 * calc check
+                 * @return {string|boolean}: supported calc string, or false if unsupported
+                 */
+                calc: function () {
+                    var props = ['calc', '-webkit-calc', '-moz-calc', '-o-calc'],
+                        i;
+
+                    for (i = 0; i < props.length; i += 1) {
+                        if (this.valCheck(props[i] + '(1px)')) {
+                            return props[i];
+                        }
+                    }
+                    return false;
+                },
+
+                /*
+                 * request animation frame
+                 * @return {function}: native request animation frame if supported
+                 *      polyfill adapted from original by Erik Moller if not
+                 */
+                requestAnimFrame: function () {
+                    if (typeof _raf !== 'undefined' && typeof _caf !== 'undefined') {
+                        return function (f) { return _raf(f); };
+                    }
+                    var l;
+                    return function (f) {
+                        var c = new Date().getTime(),
+                            t = Math.max(0, 16 - (c - l));
+                        l = c + t;
+                        return window.setTimeout(function () {
+                            f(l);
+                        }, t);
+                    };
+                },
+
+                /*
+                 * cancel animation frame
+                 * @return {function}: native cancel animation frame if supported
+                 *      polyfill adapted from original by Erik Moller if not
+                 */
+                cancelAnimFrame: function () {
+                    if (typeof _raf !== 'undefined' && typeof _caf !== 'undefined') {
+                        return function (id) { return _caf(id); };
+                    }
+                    return function (id) {
+                        window.clearTimeout(id);
+                    };
+                }
             }
         },
 
@@ -65,9 +125,12 @@ window.client = window.client || new function () {
          */
         _merge = function (t, o, f) {
             var i;
+            f = f || function (a) {
+                return typeof a === 'function' ? a.call(this) : a;
+            };
             for (i in o) {
                 if (o.hasOwnProperty(i)) {
-                    t[i] = f(o[i]);
+                    t[i] = f.call(t, o[i]);
                 }
             }
         },
@@ -77,64 +140,7 @@ window.client = window.client || new function () {
          * @return {object} feature and user agent data
          */
         _run = function () {
-            var result = this,
-                raf = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame,
-                caf = window.cancelAnimationFrame || window.webkitCancelRequestAnimationFrame || window.mozCancelRequestAnimationFrame;
-
-            // unique checks that don't fit into the 'checks' categories
-            result.safari = _navAgent.indexOf('chrome') > -1 ? false : _navAgent.indexOf('safari') > -1;
-            result.retina = window.devicePixelRatio >= 1.5;
-            result.pictureElem = typeof window.HTMLPictureElement !== 'undefined';
-            result.srcsetBasic = typeof _img.srcset !== 'undefined'; // basic 1x / 2x descriptor use of srcset
-            result.srcsetFull = typeof _img.srcset !== 'undefined' && typeof _img.sizes !== 'undefined'; // full srcset use, including media queries
-
-            /*
-             * calc check
-             * @return {string|boolean}: supported calc string, or false if unsupported
-             */
-            result.calc = (function (props, i) {
-                for (i = 0; i < props.length; i += 1) {
-                    _div.style.cssText = 'width:' + props[i] + '(1px);';
-                    if (_div.style.length) {
-                        return props[i];
-                    }
-                }
-                return false;
-            }(['calc', '-webkit-calc', '-moz-calc', '-o-calc']));
-
-            /*
-             * request animation frame
-             * @return {function}: native request animation frame if supported
-             *      polyfill adapted from original by Erik Moller if not
-             */
-            result.requestAnimFrame = (function (r, c) {
-                if (typeof r !== 'undefined' && typeof c !== 'undefined') {
-                    return r;
-                }
-                var l;
-                return function (f) {
-                    var c = new Date().getTime(),
-                        t = Math.max(0, 16 - (c - l));
-                    l = c + t;
-                    return window.setTimeout(function () {
-                        f(l);
-                    }, t);
-                };
-            }(raf, caf));
-
-            /*
-             * cancel animation frame
-             * @return {function}: native cancel animation frame if supported
-             *      polyfill adapted from original by Erik Moller if not
-             */
-            result.cancelAnimFrame = (function (r, c) {
-                if (typeof r !== 'undefined' && typeof c !== 'undefined') {
-                    return c;
-                }
-                return function (id) {
-                    window.clearTimeout(id);
-                };
-            }(raf, caf));
+            var result = this;
 
             /*
              * inclusive RegEx check against the browser's User Agent
@@ -214,6 +220,7 @@ window.client = window.client || new function () {
             _merge(result, _checks.props, result.propCheck); // cycle through css property checks
             _merge(result, _checks.units, result.valCheck); // cycle through unit checks
             _merge(result, _checks.uas, result.uaCheck); // cycle through uaChecks and see if they're contained in the userAgent string
+            _merge(result, _checks.unique); // cycle through unique checks
 
         };
 
