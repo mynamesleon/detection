@@ -56,6 +56,7 @@ These properties are also booleans.
 - rem
 
 ### Additional features
+- canvas (checks for support of the canvas element)
 - retina (boolean - true if devicePixelRatio >= 1.5)
 - pictureElem (boolean - checks for `<picture>` element support)
 - srcsetBasic (boolean - checks for basic use of the img 'srcset' attribute with x descriptors for high pixel density displays)

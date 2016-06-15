@@ -82,6 +82,15 @@ window.client = window.client || new function () {
                 },
 
                 /*
+                 * canvas check
+                 * @return {boolean}
+                 */
+                canvas: function () {
+                    var canvas = _doc.createElement('canvas');
+                    return !!(canvas.getContext && canvas.getContext('2d'));
+                },
+
+                /*
                  * request animation frame
                  * @return {function}: native request animation frame if supported
                  *      polyfill adapted from original by Erik Moller if not
