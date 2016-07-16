@@ -5,7 +5,7 @@
  * github.com/mynamesleon/detection
  */
 
-window.client = window.client || new function () {
+window.client = window.client || new function Client () {
     'use strict';
 
     var _navAgent = window.navigator.userAgent,
@@ -14,6 +14,7 @@ window.client = window.client || new function () {
         _img = new Image(),
         _raf = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame,
         _caf = window.cancelAnimationFrame || window.webkitCancelRequestAnimationFrame || window.mozCancelRequestAnimationFrame,
+        _cache = {},
 
         _checks = {
             // user agent checks
@@ -57,13 +58,14 @@ window.client = window.client || new function () {
                 vmin: '1vmin',
                 vmax: '1vmax'
             },
-            // unique checks - functions are called when checked in the context of 'result' from _run
+            // unique checks - functions are called in the context of the main returned object
             unique: {
                 safari: _navAgent.indexOf('chrome') > -1 ? false : _navAgent.indexOf('safari') > -1,
                 retina: window.devicePixelRatio >= 1.5,
                 pictureElem: typeof window.HTMLPictureElement !== 'undefined',
                 srcsetBasic: typeof _img.srcset !== 'undefined', // basic 1x / 2x descriptor use of srcset
-                srcsetFull: typeof _img.srcset !== 'undefined' && typeof _img.sizes !== 'undefined', // full srcset use, including media queries
+                // full srcset use, including media queries - check for basic as well due to false positives in older firefox
+                srcsetFull: typeof _img.srcset !== 'undefined' && typeof _img.sizes !== 'undefined',
 
                 /*
                  * calc check
@@ -88,41 +90,32 @@ window.client = window.client || new function () {
                 canvas: function () {
                     var canvas = _doc.createElement('canvas');
                     return !!(canvas.getContext && canvas.getContext('2d'));
-                },
-
-                /*
-                 * request animation frame
-                 * @return {function}: native request animation frame if supported
-                 *      polyfill adapted from original by Erik Moller if not
-                 */
-                requestAnimFrame: function () {
-                    if (typeof _raf !== 'undefined' && typeof _caf !== 'undefined') {
-                        return function (f) { return _raf(f); };
-                    }
-                    var l;
-                    return function (f) {
-                        var c = new Date().getTime(),
-                            t = Math.max(0, 16 - (c - l));
-                        l = c + t;
-                        return window.setTimeout(function () {
-                            f(l);
-                        }, t);
-                    };
-                },
-
-                /*
-                 * cancel animation frame
-                 * @return {function}: native cancel animation frame if supported
-                 *      polyfill adapted from original by Erik Moller if not
-                 */
-                cancelAnimFrame: function () {
-                    if (typeof _raf !== 'undefined' && typeof _caf !== 'undefined') {
-                        return function (id) { return _caf(id); };
-                    }
-                    return function (id) {
-                        window.clearTimeout(id);
-                    };
                 }
+            }
+        },
+
+        /*
+         * canvas check
+         * @param s {string}
+         * @return {string}
+         */
+        _trim = function (s) {
+            return s.replace(/^[\s\uFEFF]+|[\s\uFEFF]+$/g,'');
+        },
+
+        /*
+         * check if result has been cached and return if so, otherwise call and cache
+         * @param k {string}: key
+         * @param f {function}: modifier function to run
+         * @param c {object}: context to call the modifier function within
+         * @param a {object}: context to call the modifier function within
+         */
+        _check = function (k, f, c, a) {
+            return function () {
+                if (typeof _cache[k] === 'undefined') {
+                    _cache[k] = f.call(c, a);
+                }
+                return _cache[k];
             }
         },
 
@@ -139,7 +132,7 @@ window.client = window.client || new function () {
             };
             for (i in o) {
                 if (o.hasOwnProperty(i)) {
-                    t[i] = f.call(t, o[i]);
+                    t[i] = _check(i, f, t, o[i]);
                 }
             }
         },
@@ -150,6 +143,40 @@ window.client = window.client || new function () {
          */
         _run = function () {
             var result = this;
+
+            /*
+             * request animation frame
+             * @return {function}: native request animation frame if supported
+             *      polyfill adapted from original by Erik Moller if not
+             */
+            result.requestAnimFrame = (function () {
+                if (typeof _raf !== 'undefined' && typeof _caf !== 'undefined') {
+                    return function (f) { return _raf(f); };
+                }
+                var l;
+                return function (f) {
+                    var c = new Date().getTime(),
+                        t = Math.max(0, 16 - (c - l));
+                    l = c + t;
+                    return window.setTimeout(function () {
+                        f(l);
+                    }, t);
+                };
+            }());
+
+            /*
+             * cancel animation frame
+             * @return {function}: native cancel animation frame if supported
+             *      polyfill adapted from original by Erik Moller if not
+             */
+            result.cancelAnimFrame = (function () {
+                if (typeof _raf !== 'undefined' && typeof _caf !== 'undefined') {
+                    return function (id) { return _caf(id); };
+                }
+                return function (id) {
+                    window.clearTimeout(id);
+                };
+            }());
 
             /*
              * inclusive RegEx check against the browser's User Agent
@@ -167,9 +194,11 @@ window.client = window.client || new function () {
              *      e.g. ['boxSizing', 'WebkitBoxSizing'] or 'boxSizing WebkitBoxSizing'
              * @return {string|boolean}: returns first supported property - returns false if none are supported
              */
-            result.propCheck = function (props) {
+            result.propCheck = function (props, elem) {
                 var p,
                     prop;
+
+                elem = elem || _div;
 
                 if (typeof props === 'string') {
                     props = props.split(' ');
@@ -177,7 +206,7 @@ window.client = window.client || new function () {
 
                 for (p = 0; p < props.length; p += 1) {
                     prop = props[p];
-                    if (typeof _div.style[prop] !== 'undefined') {
+                    if (typeof elem.style[prop] !== 'undefined') {
                         return prop;
                     }
                 }
@@ -191,46 +220,46 @@ window.client = window.client || new function () {
              * @return {boolean}: if property and value applied can be used
              * if only one argument passed in, will be taken as value applied to width
              */
-            result.valCheck = function (prop, val) {
+            result.valCheck = function (prop, val, elem) {
                 if (typeof val === 'undefined') { // if only one param passed in, assume it is the value to be used
                     val = prop;
                     prop = 'width'; // set prop to width as default value
                 }
 
-                _div.style.cssText = prop + ':' + val + ';';
-                if (_div.style.length) {
-                    return true;
-                }
-                return false;
+                elem = elem || _div;
+                elem.style.cssText = prop + ':' + val + ';';
+                return !!elem.style.length;
             };
 
             /*
              * add lowercase property name as class to HTML tag if supported
              */
             result.setClasses = function () {
-                var cur = ' ' + _doc.documentElement.className + ' ',
-                    a = '',
+                var cur = (' ' + _doc.documentElement.className + ' ').replace(' no-js ', ' js '),
+                    a = [],
+                    keys,
+                    reg,
                     c,
                     i;
 
+                // keys in the client object to ignore
+                keys = ' uaCheck | propCheck | valCheck | requestAnimFrame | cancelAnimFrame | setClasses ';
+                reg = new RegExp(keys, ['i']); // use case in-sensitive search
+
                 for (i in result) {
-                    if (result.hasOwnProperty(i)) {
-                        if (typeof result[i] !== 'function' && result[i]) {
-                            c = i.toLowerCase();
-                            if (cur.indexOf(' ' + c + ' ') === -1) {
-                                a += ' ' + c;
-                            }
-                        }
+                    // check that the key does not match the excluded keys, that the value is truthy, and the key is not already in the documentElement classname
+                    if (result.hasOwnProperty(i) && !reg.test(' ' + (c = i.toLowerCase()) + ' ') && !!(typeof result[i] === 'function' ? result[i]() : result[i]) && cur.indexOf(' ' + c + ' ') === -1) {
+                        a.push(c);
                     }
                 }
-                _doc.documentElement.className += a;
+
+                _doc.documentElement.className = _trim(_trim(cur) + ' ' + a.join(' '));
             };
 
             _merge(result, _checks.props, result.propCheck); // cycle through css property checks
             _merge(result, _checks.units, result.valCheck); // cycle through unit checks
             _merge(result, _checks.uas, result.uaCheck); // cycle through uaChecks and see if they're contained in the userAgent string
             _merge(result, _checks.unique); // cycle through unique checks
-
         };
 
     return new _run();
