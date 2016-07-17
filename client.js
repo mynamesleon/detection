@@ -106,9 +106,9 @@ window.client = window.client || new function Client () {
         /*
          * check if result has been cached and return if so, otherwise call and cache
          * @param k {string}: key
-         * @param f {function}: modifier function to run
+         * @param f {function}: modifier function/check to run against a
          * @param c {object}: context to call the modifier function within
-         * @param a {object}: context to call the modifier function within
+         * @param a {misc}: argument to be passed to f
          */
         _check = function (k, f, c, a) {
             return function () {
