@@ -116,7 +116,7 @@ window.client = window.client || new function Client () {
                     _cache[k] = f.call(c, a);
                 }
                 return _cache[k];
-            }
+            };
         },
 
         /*
