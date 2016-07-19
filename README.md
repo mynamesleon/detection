@@ -68,7 +68,7 @@ These all return booleans.
 ### Methods
 
 ##### addTest
-The `client.addTest(key, test)` method is useful for adding your own tests to the `client` object which, when called, will be cached internally. The first parameter is the key for it to be included under in the client object, and the second is the test you wish to run, which needs to either be, or return, a truthy value. You can of course add them directly to the client object by doing `client.someName = function() { /* some code */ }` if you prefer.
+The `client.addTest(key, test)` method is useful for adding your own tests to the `client` object which, when called, will be cached internally. The first parameter is the key for it to be included under in the client object, and the second is the test you wish to run. You can of course add them directly to the client object by doing `client.someName = function() { /* some code */ }` if you prefer.
 
 ##### setClasses
 Calling `client.setClasses()` will cycle through all of the `client` checks and add the key as a lowercase class to the `<html>` tag as long as the check returns a truthy value. By default this will automatically run (and cache the results if it is an internal check, or was added via the `addTest` method) any checks that have not yet been called. If you wish to only add classes for checks that have already been run and cached internally, then you can pass in `false` like so: `client.setClasses(false)`.
