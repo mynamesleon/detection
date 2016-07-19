@@ -5,7 +5,7 @@
  * github.com/mynamesleon/detection
  */
 
-window.client = window.client || new function Client () {
+window.client = window.client || new function Client() {
     'use strict';
 
     var _navAgent = window.navigator.userAgent,
@@ -116,7 +116,7 @@ window.client = window.client || new function Client () {
                     _cache[k] = f.call(c, a);
                 }
                 return _cache[k];
-            }
+            };
         },
 
         /*
@@ -232,10 +232,23 @@ window.client = window.client || new function Client () {
             };
 
             /*
-             * add lowercase property name as class to HTML tag if supported
+             * add a test to the client object
+             * @param key {string}: test name (key to use in the client object)
+             * @param test {misc}: test to run
              */
-            result.setClasses = function () {
+            result.addTest = function (key, test) {
+                result[key] = result[key] || _check(key, function (a) {
+                    return typeof a === 'function' ? a.call(this) : a;
+                }, result, test);
+            };
+
+            /*
+             * add lowercase property name as class to HTML tag if supported
+             * @param toCall {boolean}: whether to call any tests that have not yet been run - defaults to true
+             */
+            result.setClasses = function (toCall) {
                 var cur = (' ' + _doc.documentElement.className + ' ').replace(' no-js ', ' js '),
+                    source = toCall === false ? _cache : result,
                     a = [],
                     keys,
                     reg,
@@ -243,12 +256,12 @@ window.client = window.client || new function Client () {
                     i;
 
                 // keys in the client object to ignore
-                keys = ' uaCheck | propCheck | valCheck | requestAnimFrame | cancelAnimFrame | setClasses ';
+                keys = ' addTest | uaCheck | propCheck | valCheck | requestAnimFrame | cancelAnimFrame | setClasses ';
                 reg = new RegExp(keys, ['i']); // use case in-sensitive search
 
                 for (i in result) {
                     // check that the key does not match the excluded keys, that the value is truthy, and the key is not already in the documentElement classname
-                    if (result.hasOwnProperty(i) && !reg.test(' ' + (c = i.toLowerCase()) + ' ') && !!(typeof result[i] === 'function' ? result[i]() : result[i]) && cur.indexOf(' ' + c + ' ') === -1) {
+                    if (result.hasOwnProperty(i) && !reg.test(' ' + (c = i.toLowerCase()) + ' ') && cur.indexOf(' ' + c + ' ') === -1 && !!(typeof source[i] === 'function' ? source[i]() : source[i])) {
                         a.push(c);
                     }
                 }

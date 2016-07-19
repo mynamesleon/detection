@@ -65,8 +65,13 @@ These all return booleans.
 
 ### Methods
 
+##### addTest
+The `client.addTest(key, test)` method is useful for adding your own tests to the `client` object which, when called, will be cached internally. The first parameter is the key for it to be included under in the client object, and the second is the test you wish to run, which needs to either be, or return, a truthy value. You can of course add them directly to the client object by doing `client.someName = function() { /* some code */ }` if you prefer.
+
 ##### setClasses
-Calling `client.setClasses()` will cycle through all of the `client` checks and add the key as a lowercase class to the `<html>` tag as long as the check returns a truthy value. This will automatically run and cache the results of any checks that have not yet been called. (Additionally, all of the keys for the methods mentioned in this section are specifically ignored, so will not be added as classes to the `<html>` tag).
+Calling `client.setClasses()` will cycle through all of the `client` checks and add the key as a lowercase class to the `<html>` tag as long as the check returns a truthy value. By default this will automatically run (and cache the results if it is an internal check, or was added via the `addTest` method) any checks that have not yet been called. If you wish to only add classes for checks that have already been run and cached internally, then you can pass in `false` like so: `client.setClasses(false)`.
+
+All of the keys for the methods mentioned in this section are specifically ignored by the `setClasses` method, so will not be added as classes to the `<html>` tag.
 
 ##### requestAnimFrame
 The `client.requestAnimFrame(functionName)` function uses the browser's native requestAnimationFrame if supported, or a polyfill (adapted from Erik Moller's) if not. This will return an ID which can be passed into `client.cancelAnimFrame(id)` to cancel the function call.
@@ -97,3 +102,5 @@ This can have multiple purposes, such as checking if a particular unit is suppor
 Feel free to add your own checks to the source code if you think they'd be of use - the sections for each of the checks are clearly labelled in their respective objects in the non-minified script inside the `_checks` object: `uas` for userAgent checks, `props` for CSS property checks, `units` for CSS unit checks, and `unique` for any unique checks that either don't fit into those categories or require extra logic.
 
 In the interest of simplicity (and reduced file size!), I've deliberately only added values, units, and browser checks that I'm likely to actually need to check for.
+
+For more complex and unique checks that shouldn't really be part of the code base, hopefully the included methods mentioned above will be of use to you.
