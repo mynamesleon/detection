@@ -1,8 +1,10 @@
 # Browser and Feature Detection script
 
-A tiny standalone browser and feature detection script, that runs its checks only when you need them.
+A tiny standalone browser and feature detection script.
 
 The checks are made available via a `client` object exposed at window level. It also includes polyfills for the Request and Cancel Animation Frame functions, and exposes some helpful methods for doing checks of your own.
+
+Version 1 ran all the checks as soon as possible and stored the result, but this meant that there was unnecessary processing on load. So version 2 only runs its checks when you need them.
 
 ## The built in checks
 
@@ -80,12 +82,12 @@ The `client.requestAnimFrame(functionName)` function uses the browser's native r
 The `client.cancelAnimFrame(id)` function also uses the browser's native cancelAnimationFrame, or a polyfill if unsupported.
 
 ##### uaCheck
-`client.uaCheck()` takes a string which it converts to a regular expression to do a case-insensitive check against the browser's userAgent string to return a boolean. E.g. `client.uaCheck('chrome|firefox')` will return true in both Chrome and Firefox.
+`client.uaCheck` takes a string which it converts to a regular expression to do a case-insensitive check against the browser's userAgent string to return a boolean. E.g. `client.uaCheck('chrome|firefox')` will return true in both Chrome and Firefox.
 Note: this function simply checks for the existence of the string, so `client.uaCheck('chro')` will also return true in Chrome.
 Note: checks against the user agent should only be relied on as a last resort. Proper feature detection is much more reliable.
 
 ##### propCheck
-`client.propCheck()` takes either a string of space delimited properties to check for, or an array of properties. E.g. `client.propCheck('borderRadius WebkitBorderRadius')` or `client.propCheck(['borderRadius', 'WebkitBorderRadius'])`. This will return the **first supported value** in the sequence, or false if none are supported. E.g. `client.propCheck('OBorderRadius MozBorderRadius WebkitBorderRadius borderRadius')` would return 'WebkitBorderRadius' in current Chrome.
+`client.propCheck` takes either a string of space delimited properties to check for, or an array of properties. E.g. `client.propCheck('borderRadius WebkitBorderRadius')` or `client.propCheck(['borderRadius', 'WebkitBorderRadius'])`. This will return the **first supported value** in the sequence, or false if none are supported. E.g. `client.propCheck('OBorderRadius MozBorderRadius WebkitBorderRadius borderRadius')` would return 'WebkitBorderRadius' in current Chrome.
 
 The checks are made on a `<div>` by default, but you can optionally pass in a second parameter to check the style properties against a specific element. E.g. `client.propCheck(['borderRadius', 'WebkitBorderRadius'], document.createElement('canvas'))`
 
