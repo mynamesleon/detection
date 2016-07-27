@@ -42,6 +42,8 @@ window.client = window.client || new function Client() {
             },
             // css properties
             props: {
+                boxSizing: ['boxSizing', 'WebkitBoxSizing', 'MozBoxSizing'],
+                boxShadow: ['boxShadow', 'WebkitBoxShadow', 'MozBoxShadow'],
                 perspective: ['perspective', 'WebkitPerspective', 'MozPerspective', 'OPerspective', 'msPerspective'], // translateZ support
                 transform: ['transform', 'WebkitTransform', 'MozTransform', 'OTransform', 'msTransform'],
                 transition: ['transition', 'WebkitTransition', 'MozTransition', 'OTransition', 'msTransition'],
