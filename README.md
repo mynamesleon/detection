@@ -40,6 +40,8 @@ These are dependent on the browser's user agent string, so should not be relied 
 
 ### CSS property detection:
 These will return the supported CSS property as a string (e.g. 'WebkitPerspective'). If unsupported, they will return false.
+- boxSizing
+- boxShadow
 - perspective (can be used to check translateZ or translate3d support)
 - transition
 - transform
