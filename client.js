@@ -64,10 +64,20 @@ window.client = window.client || new function Client() {
             unique: {
                 safari: _navAgent.indexOf('chrome') > -1 ? false : _navAgent.indexOf('safari') > -1,
                 retina: window.devicePixelRatio >= 1.5,
+                history: !!(window.history && window.history.pushState),
                 pictureElem: typeof window.HTMLPictureElement !== 'undefined',
                 srcsetBasic: typeof _img.srcset !== 'undefined', // basic 1x / 2x descriptor use of srcset
                 // full srcset use, including media queries - check for basic as well due to false positives in older firefox
                 srcsetFull: typeof _img.srcset !== 'undefined' && typeof _img.sizes !== 'undefined',
+
+                /*
+                 * placeholder checker - opera mini v7 does not support placeholder, although its DOM indicates it does
+                 * @return {boolean}
+                 */
+                placeholder: function () {
+                    var isOperaMini = Object.prototype.toString.call(window.operamini) === '[object OperaMini]';
+                    return 'placeholder' in _doc.createElement('input') && 'placeholder' in _doc.createElement('textarea') && !isOperaMini;
+                },
 
                 /*
                  * calc check
